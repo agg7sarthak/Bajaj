@@ -1,31 +1,36 @@
 from flask import Flask, request, jsonify
-import random
-import string
 
 app = Flask(__name__)
 
-@app.route('/endpoint', methods=['GET', 'POST'])
-def endpoint():
+@app.route('/bfhl', methods=['GET', 'POST'])
+def bfhl():
     if request.method == 'POST':
         data = request.get_json()
         
-        # Ensure data contains required fields
-        if not data or 'user_id' not in data or 'college_email' not in data or 'college_roll' not in data:
-            return jsonify({'Status': 'Error', 'Message': 'Invalid input'}), 400
+        if not data or 'data' not in data:
+            return jsonify({'is_success': False, 'user_id': 'john_doe_17091999', 'email': 'john@xyz.com', 'roll_number': 'ABCD123', 'numbers': [], 'alphabets': [], 'highest_alphabet': []}), 400
+
+        user_id = 'john_doe_17091999'
+        email = 'john@xyz.com'
+        roll_number = 'ABCD123'
+
+        numbers = [item for item in data['data'] if item.isdigit()]
+        alphabets = [item for item in data['data'] if item.isalpha()]
+        highest_alphabet = [max(alphabets)] if alphabets else []
 
         response = {
-            'Status': 'Success',
-            'User ID': data.get('user_id'),
-            'College Email ID': data.get('college_email'),
-            'College Roll Number': data.get('college_roll'),
-            'Array for numbers': [random.randint(1, 100) for _ in range(10)],
-            'Array for alphabets': [random.choice(string.ascii_letters) for _ in range(10)]
+            'is_success': True,
+            'user_id': user_id,
+            'email': email,
+            'roll_number': roll_number,
+            'numbers': numbers,
+            'alphabets': alphabets,
+            'highest_alphabet': highest_alphabet
         }
         return jsonify(response)
     
     elif request.method == 'GET':
-        operation_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-        return jsonify({'operation_code': operation_code})
+        return jsonify({'operation_code': 1})
 
 if __name__ == '__main__':
     app.run(debug=True)
